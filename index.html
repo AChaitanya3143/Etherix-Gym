@@ -1,0 +1,1627 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>ETHERIX GYM — Dominate Your Limits</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Rajdhani:wght@400;500;600;700&family=Exo+2:wght@300;400;500;600;700;800;900&family=Share+Tech+Mono&family=Anton&family=Barlow+Condensed:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet"/>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<style>
+:root {
+  --black: #040810;
+  --charcoal: #080f1a;
+  --dark: #0c1520;
+  --panel: #101b28;
+  --panel-light: #162030;
+  --border: #1a2838;
+  --border-light: #243348;
+  --blue: #00c8f0;
+  --blue-bright: #00e5ff;
+  --blue-dim: #007fa0;
+  --purple: #6c1fff;
+  --red: #ff1744;
+  --red-dim: #cc0033;
+  --gold: #d4a844;
+  --silver: #8fafc8;
+  --steel: #c8dcea;
+  --white: #eef5fb;
+  --text-body: #7a9ab8;
+  --text-muted: #3a5068;
+  --glow-blue: 0 0 30px rgba(0,200,240,0.6), 0 0 80px rgba(0,200,240,0.25);
+  --glow-gold: 0 0 20px rgba(212,168,68,0.5), 0 0 50px rgba(212,168,68,0.2);
+  --glow-red: 0 0 24px rgba(255,23,68,0.5);
+}
+
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+html{scroll-behavior:smooth;overflow-x:hidden;}
+body{background:var(--black);color:var(--white);font-family:'Exo 2',sans-serif;overflow-x:hidden;cursor:none;}
+
+/* CUSTOM CURSOR */
+#cursor{position:fixed;width:6px;height:6px;background:var(--blue-bright);border-radius:50%;pointer-events:none;z-index:99999;transform:translate(-50%,-50%);mix-blend-mode:screen;transition:transform 0.1s;}
+#cursor-ring{position:fixed;width:40px;height:40px;border:1px solid rgba(0,200,240,0.4);border-radius:50%;pointer-events:none;z-index:99998;transform:translate(-50%,-50%);transition:all 0.18s ease;mix-blend-mode:screen;}
+
+::-webkit-scrollbar{width:3px;}
+::-webkit-scrollbar-track{background:var(--black);}
+::-webkit-scrollbar-thumb{background:linear-gradient(to bottom,var(--blue),var(--purple));}
+
+/* ── NAV ── */
+nav{position:fixed;top:0;left:0;right:0;z-index:1000;padding:22px 70px;display:flex;align-items:center;justify-content:space-between;transition:all 0.5s cubic-bezier(0.4,0,0.2,1);}
+nav.scrolled{background:rgba(4,8,16,0.96);backdrop-filter:blur(24px);border-bottom:1px solid var(--border);padding:14px 70px;}
+.nav-logo{font-family:'Anton',sans-serif;font-size:26px;letter-spacing:8px;color:var(--white);text-decoration:none;display:flex;align-items:center;gap:2px;}
+.nav-logo span{color:var(--blue-bright);text-shadow:var(--glow-blue);}
+.nav-logo-dot{width:5px;height:5px;background:var(--gold);border-radius:50%;margin-left:4px;box-shadow:var(--glow-gold);animation:dotPulse 2s infinite;}
+.nav-links{display:flex;gap:40px;list-style:none;}
+.nav-links a{color:var(--steel);text-decoration:none;font-family:'Barlow Condensed',sans-serif;font-size:13px;letter-spacing:3px;font-weight:600;text-transform:uppercase;transition:color 0.3s;position:relative;}
+.nav-links a::after{content:'';position:absolute;bottom:-5px;left:0;width:0;height:1px;background:var(--blue);transition:width 0.3s;}
+.nav-links a:hover{color:var(--blue-bright);}
+.nav-links a:hover::after{width:100%;}
+.nav-cta{background:transparent;border:1px solid var(--gold);color:var(--gold);padding:10px 28px;font-family:'Barlow Condensed',sans-serif;font-size:12px;letter-spacing:4px;font-weight:700;text-transform:uppercase;cursor:pointer;transition:all 0.35s;position:relative;overflow:hidden;}
+.nav-cta::before{content:'';position:absolute;top:0;left:-100%;width:100%;height:100%;background:var(--gold);transition:left 0.35s;z-index:-1;}
+.nav-cta:hover{color:var(--black);box-shadow:var(--glow-gold);}
+.nav-cta:hover::before{left:0;}
+.hamburger{display:none;flex-direction:column;gap:5px;cursor:pointer;}
+.hamburger span{width:26px;height:1px;background:var(--steel);transition:all 0.3s;}
+
+/* ── MOBILE MENU ── */
+.mobile-menu{position:fixed;inset:0;background:rgba(4,8,16,0.99);z-index:998;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:28px;transform:translateX(100%);transition:transform 0.5s cubic-bezier(0.4,0,0.2,1);}
+.mobile-menu.open{transform:translateX(0);}
+.mobile-menu a{color:var(--white);text-decoration:none;font-family:'Anton',sans-serif;font-size:52px;letter-spacing:5px;transition:color 0.3s;}
+.mobile-menu a:hover{color:var(--blue-bright);}
+
+/* ═══════════════ HERO — SPLIT LAYOUT ═══════════════ */
+#hero {
+  position: relative;
+  height: 100vh;
+  min-height: 740px;
+  overflow: hidden;
+  display: flex;
+  align-items: stretch;
+}
+
+/* Subtle full-bg canvas layer */
+#hero-canvas {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  pointer-events: none;
+}
+
+/* Grid & scanlines overlays — full width */
+.hero-grid-overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+  background-image: linear-gradient(rgba(0,200,240,0.022) 1px,transparent 1px),linear-gradient(90deg,rgba(0,200,240,0.022) 1px,transparent 1px);
+  background-size: 60px 60px;
+  pointer-events: none;
+}
+.hero-scanlines {
+  position: absolute;
+  inset: 0;
+  background: repeating-linear-gradient(0deg,transparent,transparent 3px,rgba(0,0,0,0.05) 3px,rgba(0,0,0,0.05) 4px);
+  z-index: 4;
+  pointer-events: none;
+}
+.scanline-sweep {
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: linear-gradient(to bottom,transparent,rgba(0,200,240,0.1),transparent);
+  animation: scanlineSweep 9s linear infinite;
+  z-index: 5;
+  pointer-events: none;
+}
+
+/* ── LEFT: Hero Image Panel ── */
+.hero-image-panel {
+  position: relative;
+  width: 52%;
+  flex-shrink: 0;
+  overflow: hidden;
+}
+.hero-image-panel img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center top;
+  display: block;
+  /* Bright, high-contrast, vivid — makes muscle cuts pop */
+  filter: contrast(1.22) brightness(1.08) saturate(1.1);
+  transition: transform 8s ease;
+}
+.hero-image-panel img:hover {
+  transform: scale(1.03);
+}
+
+/* Gradient fade — light left, dark right blend, subtle bottom vignette */
+.hero-image-panel::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(
+      to right,
+      rgba(4,8,16,0.0) 0%,
+      rgba(4,8,16,0.0) 50%,
+      rgba(4,8,16,0.78) 78%,
+      rgba(4,8,16,1.0) 100%
+    ),
+    linear-gradient(
+      to bottom,
+      rgba(4,8,16,0.45) 0%,
+      transparent 18%,
+      transparent 72%,
+      rgba(4,8,16,0.68) 100%
+    );
+  z-index: 1;
+}
+
+/* Subtle blue rim-light effect on image — gives that elite studio feel */
+.hero-image-panel::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    120deg,
+    rgba(0,200,240,0.07) 0%,
+    transparent 40%,
+    rgba(108,31,255,0.05) 100%
+  );
+  z-index: 2;
+  pointer-events: none;
+}
+
+/* Corner decorative brackets on image */
+.img-bracket {
+  position: absolute;
+  width: 28px;
+  height: 28px;
+  border-color: var(--blue);
+  border-style: solid;
+  z-index: 2;
+}
+.img-bracket.tl { top: 24px; left: 24px; border-width: 2px 0 0 2px; box-shadow: -4px -4px 12px rgba(0,200,240,0.25); }
+.img-bracket.br { bottom: 24px; right: 0; border-width: 0 2px 2px 0; }
+
+/* Image overlay stat badge */
+.hero-img-badge {
+  position: absolute;
+  bottom: 48px;
+  left: 32px;
+  z-index: 3;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  opacity: 0;
+  animation: fadeUp 1s 1.4s forwards;
+}
+.hero-img-badge-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: rgba(4,8,16,0.75);
+  backdrop-filter: blur(12px);
+  border: 1px solid var(--border-light);
+  border-left: 2px solid var(--blue);
+  padding: 10px 18px;
+}
+.hero-img-badge-val {
+  font-family: 'Anton', sans-serif;
+  font-size: 26px;
+  color: var(--blue-bright);
+  text-shadow: var(--glow-blue);
+  line-height: 1;
+}
+.hero-img-badge-lbl {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 8px;
+  letter-spacing: 3px;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  font-weight: 700;
+}
+
+/* ── RIGHT: Text Content Panel ── */
+.hero-content-panel {
+  flex: 1;
+  position: relative;
+  z-index: 6;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: flex-end;
+  text-align: right;
+  padding: 0 70px 0 40px;
+  /* Dark background for right panel */
+  background: linear-gradient(to right, rgba(4,8,16,0) 0%, rgba(4,8,16,0.6) 30%, rgba(4,8,16,0.92) 100%);
+}
+
+.hero-eyebrow {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 16px;
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 11px;
+  letter-spacing: 7px;
+  color: var(--blue);
+  margin-bottom: 28px;
+  opacity: 0;
+  animation: fadeUp 0.9s 0.3s forwards;
+}
+.hero-eyebrow-line {
+  width: 50px;
+  height: 1px;
+  background: linear-gradient(to left, transparent, var(--blue));
+}
+
+/* Hero Title */
+.hero-title {
+  font-family: 'Anton', sans-serif;
+  font-size: clamp(72px, 11vw, 148px);
+  line-height: 0.88;
+  letter-spacing: 2px;
+  margin-bottom: 20px;
+  opacity: 0;
+  animation: fadeUp 1s 0.5s forwards;
+  text-align: right;
+}
+.hero-title .t1 {
+  display: block;
+  color: var(--white);
+  text-shadow: 0 2px 40px rgba(0,0,0,0.6);
+}
+.hero-title .t2 {
+  display: block;
+  color: var(--blue-bright);
+  text-shadow: 0 4px 60px rgba(0,200,240,0.22);
+  letter-spacing: 6px;
+}
+
+.hero-subtitle {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: clamp(12px,1.6vw,16px);
+  letter-spacing: 10px;
+  color: var(--gold);
+  font-weight: 600;
+  text-transform: uppercase;
+  margin-bottom: 16px;
+  opacity: 0;
+  animation: fadeUp 0.9s 0.65s forwards;
+  text-align: right;
+}
+
+.hero-desc {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 16px;
+  letter-spacing: 1.5px;
+  color: var(--silver);
+  max-width: 400px;
+  margin: 0 0 48px auto;
+  opacity: 0;
+  animation: fadeUp 0.9s 0.78s forwards;
+  line-height: 1.85;
+  font-weight: 500;
+  text-align: right;
+}
+
+.hero-ctas {
+  display: flex;
+  gap: 14px;
+  justify-content: flex-end;
+  opacity: 0;
+  animation: fadeUp 0.9s 0.9s forwards;
+}
+
+.btn-primary {
+  padding: 17px 44px;
+  background: var(--blue-bright);
+  color: var(--black);
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 13px;
+  letter-spacing: 5px;
+  font-weight: 800;
+  text-transform: uppercase;
+  border: none;
+  cursor: pointer;
+  transition: all 0.35s;
+  clip-path: polygon(10px 0%,100% 0%,calc(100% - 10px) 100%,0% 100%);
+  position: relative;
+  overflow: hidden;
+}
+.btn-primary::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: var(--gold);
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 0.4s cubic-bezier(0.4,0,0.2,1);
+}
+.btn-primary:hover::after { transform: scaleX(1); }
+.btn-primary span { position: relative; z-index: 1; }
+.btn-primary:hover { box-shadow: var(--glow-gold); }
+
+.btn-secondary {
+  padding: 17px 44px;
+  background: transparent;
+  color: var(--steel);
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 13px;
+  letter-spacing: 5px;
+  font-weight: 700;
+  text-transform: uppercase;
+  border: 1px solid rgba(200,220,234,0.25);
+  cursor: pointer;
+  transition: all 0.35s;
+  clip-path: polygon(10px 0%,100% 0%,calc(100% - 10px) 100%,0% 100%);
+}
+.btn-secondary:hover { border-color: var(--blue); color: var(--blue-bright); }
+
+/* Vertical accent line on far right */
+.hero-vertical-accent {
+  position: absolute;
+  right: 30px;
+  top: 15%;
+  bottom: 15%;
+  width: 1px;
+  background: linear-gradient(to bottom, transparent, var(--blue-dim), transparent);
+  z-index: 6;
+  opacity: 0;
+  animation: fadeIn 1s 1.2s forwards;
+}
+.hero-vertical-accent::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -2px;
+  width: 5px;
+  height: 40px;
+  background: var(--blue-bright);
+  box-shadow: var(--glow-blue);
+  animation: accentSlide 3s 1.5s ease-in-out infinite alternate;
+}
+@keyframes accentSlide {
+  from { top: 0%; }
+  to { top: 80%; }
+}
+
+/* Scroll indicator */
+.hero-scroll {
+  position: absolute;
+  bottom: 36px;
+  right: 70px;
+  z-index: 7;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 10px;
+  opacity: 0;
+  animation: fadeIn 1s 1.6s forwards;
+}
+.hero-scroll span {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 9px;
+  letter-spacing: 5px;
+  color: var(--text-muted);
+}
+.scroll-track {
+  width: 1px;
+  height: 55px;
+  background: var(--border-light);
+  position: relative;
+  overflow: hidden;
+  align-self: center;
+}
+.scroll-track::after {
+  content: '';
+  position: absolute;
+  top: 0;left:0;right:0;bottom:0;
+  background: linear-gradient(to bottom,var(--blue),var(--purple));
+  animation: scrollDrop 2s infinite ease-in-out;
+}
+
+/* ── MARQUEE ── */
+.marquee-wrap{overflow:hidden;white-space:nowrap;border-top:1px solid var(--border);border-bottom:1px solid var(--border);position:relative;}
+.marquee-wrap.gold-bar{background:var(--gold);padding:13px 0;}
+.marquee-wrap.dark-bar{background:var(--panel);padding:12px 0;}
+.marquee-track{display:inline-flex;animation:marquee 24s linear infinite;}
+.marquee-track.rev{animation-direction:reverse;animation-duration:30s;}
+.marquee-track span{font-family:'Barlow Condensed',sans-serif;font-size:15px;letter-spacing:7px;color:var(--black);font-weight:800;text-transform:uppercase;padding:0 44px;}
+.marquee-track.dark-bar span{color:var(--blue);font-weight:700;}
+.marquee-track span.sep{color:rgba(0,0,0,0.25);padding:0 8px;}
+.marquee-track.dark-bar span.sep{color:var(--border-light);}
+
+/* ── SHARED SECTION STYLES ── */
+section{padding:130px 70px;position:relative;}
+.section-tag{font-family:'Share Tech Mono',monospace;font-size:10px;letter-spacing:6px;color:var(--blue);text-transform:uppercase;margin-bottom:18px;display:flex;align-items:center;gap:14px;font-weight:700;}
+.section-tag::before{content:'';width:36px;height:1px;background:var(--blue);box-shadow:0 0 8px var(--blue);}
+.section-title{font-family:'Anton',sans-serif;font-size:clamp(46px,7vw,88px);line-height:0.88;letter-spacing:2px;margin-bottom:22px;}
+.section-title em{font-style:normal;color:var(--blue-bright);text-shadow:0 0 40px rgba(0,200,240,0.3);}
+.section-title .gold{color:var(--gold);text-shadow:var(--glow-gold);}
+.section-body{font-family:'Barlow Condensed',sans-serif;font-size:18px;line-height:1.85;color:var(--silver);max-width:580px;font-weight:500;}
+.divider{width:100%;height:1px;background:linear-gradient(to right,transparent,var(--border-light),transparent);}
+
+/* ── FULLSCREEN VIDEO SECTION ── */
+.video-break{position:relative;height:70vh;min-height:500px;overflow:hidden;display:flex;align-items:center;justify-content:center;}
+.video-break video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;}
+.video-break-overlay{position:absolute;inset:0;background:linear-gradient(to bottom,var(--black) 0%,rgba(4,8,16,0.55) 30%,rgba(4,8,16,0.55) 70%,var(--black) 100%);}
+.video-break-content{position:relative;z-index:2;text-align:center;padding:0 24px;}
+.video-break-title{font-family:'Anton',sans-serif;font-size:clamp(52px,9vw,120px);letter-spacing:4px;color:var(--white);text-shadow:0 0 60px rgba(0,200,240,0.25);}
+.video-break-title em{color:transparent;-webkit-text-stroke:2px var(--blue-bright);font-style:normal;}
+.video-break-sub{font-family:'Barlow Condensed',sans-serif;font-size:16px;letter-spacing:8px;color:var(--gold);font-weight:600;margin-top:14px;text-transform:uppercase;}
+
+/* ── ABOUT / BRAND ── */
+#brand{background:var(--charcoal);}
+.brand-grid{display:grid;grid-template-columns:1fr 1fr;gap:90px;align-items:center;margin-top:70px;}
+.prog-wrap{margin-bottom:18px;}
+.prog-label{display:flex;justify-content:space-between;font-family:'Share Tech Mono',monospace;font-size:9px;letter-spacing:4px;color:var(--steel);margin-bottom:8px;font-weight:700;}
+.prog-track{height:2px;background:var(--border);position:relative;}
+.prog-fill{height:100%;background:linear-gradient(to right,var(--blue),var(--blue-bright));width:0;transition:width 1.6s cubic-bezier(0.4,0,0.2,1);box-shadow:var(--glow-blue);}
+.brand-img-wrap{position:relative;}
+.brand-img-main{width:100%;height:520px;object-fit:cover;filter:contrast(1.1) saturate(0.9);display:block;}
+.brand-img-secondary{position:absolute;bottom:-30px;left:-30px;width:200px;height:150px;object-fit:cover;border:3px solid var(--black);filter:contrast(1.1);box-shadow:var(--glow-blue);}
+.brand-corner{position:absolute;width:22px;height:22px;border-color:var(--blue);border-style:solid;z-index:3;}
+.brand-corner.tl{top:0;left:0;border-width:2px 0 0 2px;}
+.brand-corner.tr{top:0;right:0;border-width:2px 2px 0 0;}
+.brand-corner.bl{bottom:0;left:0;border-width:0 0 2px 2px;}
+.brand-corner.br{bottom:0;right:0;border-width:0 2px 2px 0;}
+.brand-frame{position:relative;overflow:hidden;}
+.brand-frame::after{content:'';position:absolute;inset:0;border:1px solid var(--border-light);}
+.brand-pillars{display:grid;grid-template-columns:1fr 1fr;gap:2px;margin-top:42px;}
+.pillar{background:var(--panel);padding:26px 22px;border:1px solid var(--border);position:relative;overflow:hidden;transition:all 0.35s;}
+.pillar::before{content:'';position:absolute;top:0;left:0;width:100%;height:2px;background:linear-gradient(to right,var(--blue),var(--purple));transform:scaleX(0);transition:transform 0.4s;transform-origin:left;}
+.pillar:hover::before{transform:scaleX(1);}
+.pillar:hover{border-color:rgba(0,200,240,0.2);background:rgba(0,200,240,0.02);}
+.pillar i{font-size:18px;color:var(--blue);margin-bottom:12px;display:block;}
+.pillar h4{font-family:'Anton',sans-serif;font-size:20px;letter-spacing:3px;margin-bottom:8px;}
+.pillar p{font-family:'Barlow Condensed',sans-serif;font-size:14px;color:var(--silver);line-height:1.7;font-weight:500;}
+
+/* ── IMAGE STRIP ── */
+.img-strip{display:grid;grid-template-columns:repeat(4,1fr);gap:3px;margin-top:3px;}
+.strip-item{position:relative;overflow:hidden;aspect-ratio:1.3;}
+.strip-item img{width:100%;height:100%;object-fit:cover;filter:grayscale(15%) contrast(1.1);transition:all 0.6s cubic-bezier(0.4,0,0.2,1);}
+.strip-item:hover img{filter:grayscale(0) contrast(1.15) brightness(1.05);transform:scale(1.06);}
+.strip-item-overlay{position:absolute;inset:0;background:linear-gradient(to top,rgba(4,8,16,0.8),transparent 50%);opacity:0;transition:opacity 0.4s;z-index:1;}
+.strip-item:hover .strip-item-overlay{opacity:1;}
+
+/* ── ZONES ── */
+#layout{background:var(--black);}
+.zones-header{display:grid;grid-template-columns:1fr 1fr;gap:80px;align-items:end;margin-bottom:60px;}
+.zones-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:3px;}
+.zone-card{background:var(--panel);border:1px solid var(--border);position:relative;overflow:hidden;transition:all 0.45s cubic-bezier(0.4,0,0.2,1);cursor:default;}
+.zone-card-img-wrap{overflow:hidden;position:relative;height:240px;}
+.zone-card-img{width:100%;height:100%;object-fit:cover;filter:grayscale(25%) contrast(1.1);transition:all 0.6s cubic-bezier(0.4,0,0.2,1);display:block;}
+.zone-card:hover .zone-card-img{filter:grayscale(0) contrast(1.15) brightness(1.05);transform:scale(1.07);}
+.zone-card-body{padding:30px 28px;}
+.zone-card:hover{transform:translateY(-6px);box-shadow:0 30px 60px rgba(0,0,0,0.5);}
+.zone-card.blue:hover{border-color:rgba(0,200,240,0.3);box-shadow:0 30px 60px rgba(0,0,0,0.5),0 0 0 1px rgba(0,200,240,0.1);}
+.zone-card.red:hover{border-color:rgba(255,23,68,0.3);box-shadow:0 30px 60px rgba(0,0,0,0.5),0 0 0 1px rgba(255,23,68,0.1);}
+.zone-card.purple:hover{border-color:rgba(108,31,255,0.3);box-shadow:0 30px 60px rgba(0,0,0,0.5),0 0 0 1px rgba(108,31,255,0.1);}
+.zone-color-bar{height:2px;width:100%;}
+.zone-card.blue .zone-color-bar{background:linear-gradient(to right,var(--blue),var(--blue-bright));}
+.zone-card.red .zone-color-bar{background:linear-gradient(to right,var(--red-dim),var(--red));}
+.zone-card.purple .zone-color-bar{background:linear-gradient(to right,var(--purple),#a855f7);}
+.zone-num{font-family:'Share Tech Mono',monospace;font-size:10px;letter-spacing:4px;color:var(--text-muted);margin-bottom:10px;font-weight:700;}
+.zone-icon{font-size:22px;margin-bottom:10px;}
+.zone-card.blue .zone-icon{color:var(--blue);}
+.zone-card.red .zone-icon{color:var(--red);}
+.zone-card.purple .zone-icon{color:#a855f7;}
+.zone-title{font-family:'Anton',sans-serif;font-size:24px;letter-spacing:2px;margin-bottom:10px;}
+.zone-desc{font-family:'Barlow Condensed',sans-serif;font-size:14px;color:var(--silver);line-height:1.85;font-weight:500;}
+.zone-badge{display:inline-block;margin-top:16px;padding:4px 14px;font-family:'Share Tech Mono',monospace;font-size:8px;letter-spacing:4px;border:1px solid currentColor;font-weight:700;}
+.zone-card.blue .zone-badge{color:var(--blue);border-color:rgba(0,200,240,0.3);}
+.zone-card.red .zone-badge{color:var(--red);border-color:rgba(255,23,68,0.3);}
+.zone-card.purple .zone-badge{color:#a855f7;border-color:rgba(168,85,247,0.3);}
+
+/* ── EQUIPMENT ── */
+#equipment{background:var(--charcoal);}
+.equip-layout{display:grid;grid-template-columns:1fr 1fr;gap:90px;align-items:start;margin-top:70px;}
+.equip-list{display:flex;flex-direction:column;gap:2px;}
+.equip-item{display:flex;align-items:center;gap:20px;padding:18px 24px;background:var(--panel);border:1px solid var(--border);border-left:2px solid var(--blue);transition:all 0.35s;cursor:default;position:relative;overflow:hidden;}
+.equip-item::after{content:'';position:absolute;inset:0;background:linear-gradient(to right,rgba(0,200,240,0.05),transparent);transform:translateX(-100%);transition:transform 0.4s;}
+.equip-item:hover::after{transform:translateX(0);}
+.equip-item:hover{background:rgba(0,200,240,0.03);transform:translateX(8px);border-left-color:var(--blue-bright);}
+.equip-item i{font-size:17px;color:var(--blue);width:24px;text-align:center;flex-shrink:0;}
+.equip-name{font-family:'Barlow Condensed',sans-serif;font-size:15px;font-weight:700;flex:1;color:var(--steel);letter-spacing:1px;}
+.equip-tag{font-family:'Share Tech Mono',monospace;font-size:8px;letter-spacing:3px;color:var(--text-muted);border:1px solid var(--border);padding:3px 9px;font-weight:700;flex-shrink:0;}
+.equip-visual{position:relative;}
+.equip-main-img{width:100%;height:340px;object-fit:cover;filter:contrast(1.1) saturate(0.9);display:block;}
+.equip-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:3px;margin-top:3px;}
+.equip-grid img{width:100%;height:140px;object-fit:cover;filter:grayscale(20%) contrast(1.1);transition:all 0.45s;display:block;}
+.equip-grid img:hover{filter:grayscale(0) contrast(1.15);transform:scale(1.04);}
+.equip-specs{display:grid;grid-template-columns:1fr 1fr;gap:3px;margin-top:3px;}
+.spec-item{background:var(--panel);padding:20px 22px;border:1px solid var(--border);}
+.spec-val{font-family:'Anton',sans-serif;font-size:32px;color:var(--blue-bright);}
+.spec-key{font-family:'Share Tech Mono',monospace;font-size:8px;letter-spacing:4px;color:var(--text-muted);font-weight:700;margin-top:4px;}
+
+/* ── LIGHTING ── */
+#lighting{background:var(--black);overflow:hidden;}
+.lighting-hero{position:relative;height:65vh;min-height:480px;overflow:hidden;margin-bottom:3px;}
+.lighting-hero video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:0.7;}
+.lighting-hero-overlay{position:absolute;inset:0;background:linear-gradient(to right,rgba(4,8,16,0.9) 0%,rgba(4,8,16,0.3) 50%,rgba(4,8,16,0.9) 100%);}
+.lighting-hero-content{position:relative;z-index:2;padding:0 70px;height:100%;display:flex;flex-direction:column;justify-content:center;}
+.lighting-demo{display:grid;grid-template-columns:repeat(3,1fr);gap:3px;}
+.light-zone{position:relative;overflow:hidden;border:1px solid var(--border);}
+.light-zone-img{width:100%;height:280px;object-fit:cover;filter:grayscale(20%) contrast(1.1);display:block;transition:all 0.6s;}
+.light-zone:hover .light-zone-img{filter:grayscale(0) contrast(1.15);transform:scale(1.05);}
+.light-zone-tint{position:absolute;inset:0;pointer-events:none;z-index:1;}
+.light-zone.cardio .light-zone-tint{background:linear-gradient(to top,rgba(0,200,240,0.65) 0%,transparent 55%);}
+.light-zone.strength .light-zone-tint{background:linear-gradient(to top,rgba(255,23,68,0.65) 0%,transparent 55%);}
+.light-zone.aesthetic .light-zone-tint{background:linear-gradient(to top,rgba(108,31,255,0.65) 0%,transparent 55%);}
+.light-zone-content{position:absolute;bottom:0;left:0;right:0;padding:30px 26px;z-index:2;}
+.light-zone-title{font-family:'Anton',sans-serif;font-size:28px;letter-spacing:4px;margin-bottom:8px;}
+.light-zone-desc{font-family:'Barlow Condensed',sans-serif;font-size:14px;color:rgba(255,255,255,0.88);line-height:1.75;font-weight:500;}
+.light-strip{position:absolute;bottom:0;left:0;right:0;height:3px;z-index:3;}
+.light-zone.cardio .light-strip{background:linear-gradient(to right,transparent,var(--blue),transparent);box-shadow:0 0 12px var(--blue);}
+.light-zone.strength .light-strip{background:linear-gradient(to right,transparent,var(--red),transparent);box-shadow:0 0 12px var(--red);}
+.light-zone.aesthetic .light-strip{background:linear-gradient(to right,transparent,#a855f7,transparent);box-shadow:0 0 12px #a855f7;}
+
+/* ── EXPERIENCE ── */
+#experience{background:var(--charcoal);}
+.features-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:3px;margin-top:60px;}
+.feat-card{background:var(--panel);padding:38px 30px;border:1px solid var(--border);position:relative;overflow:hidden;transition:all 0.45s;}
+.feat-card::after{content:'';position:absolute;bottom:0;left:0;right:0;height:2px;background:linear-gradient(to right,var(--blue),var(--purple));transform:scaleX(0);transition:transform 0.4s;transform-origin:left;}
+.feat-card:hover::after{transform:scaleX(1);}
+.feat-card:hover{transform:translateY(-8px);border-color:rgba(0,200,240,0.2);box-shadow:0 30px 60px rgba(0,0,0,0.4);}
+.feat-icon{width:50px;height:50px;border:1px solid var(--border-light);display:flex;align-items:center;justify-content:center;margin-bottom:22px;transition:all 0.35s;}
+.feat-card:hover .feat-icon{border-color:var(--blue);box-shadow:var(--glow-blue);}
+.feat-icon i{font-size:18px;color:var(--blue);}
+.feat-title{font-family:'Anton',sans-serif;font-size:21px;letter-spacing:2px;margin-bottom:10px;}
+.feat-text{font-family:'Barlow Condensed',sans-serif;font-size:14px;color:var(--silver);line-height:1.85;font-weight:500;}
+
+/* ── PHOTO MOSAIC ── */
+.photo-mosaic{display:grid;grid-template-columns:2.2fr 1fr 1fr;grid-template-rows:300px 300px;gap:3px;margin-top:60px;}
+.photo-mosaic .p1{grid-row:1/3;}
+.pm-item{overflow:hidden;position:relative;}
+.pm-item img{width:100%;height:100%;object-fit:cover;filter:grayscale(15%) contrast(1.1);transition:all 0.65s cubic-bezier(0.4,0,0.2,1);}
+.pm-item:hover img{filter:grayscale(0) contrast(1.15) brightness(1.05);transform:scale(1.06);}
+.pm-item::after{content:'';position:absolute;inset:0;background:linear-gradient(135deg,rgba(0,200,240,0.08),transparent 60%);opacity:0;transition:opacity 0.4s;z-index:1;}
+.pm-item:hover::after{opacity:1;}
+
+/* ── TECH ── */
+#tech{background:var(--black);}
+.tech-layout{display:grid;grid-template-columns:1fr 1fr;gap:90px;align-items:center;margin-top:70px;}
+.phone-frame{width:285px;height:570px;border:1px solid rgba(0,200,240,0.25);background:var(--panel);position:relative;overflow:hidden;box-shadow:var(--glow-blue),0 40px 80px rgba(0,0,0,0.5);margin:0 auto;}
+.phone-screen{position:absolute;inset:8px;background:var(--dark);overflow:hidden;}
+.phone-ui{padding:26px 20px;height:100%;}
+.phone-header{font-family:'Share Tech Mono',monospace;font-size:9px;letter-spacing:3px;color:var(--blue);margin-bottom:22px;display:flex;justify-content:space-between;font-weight:700;}
+.phone-stat-row{display:flex;gap:8px;margin-bottom:18px;}
+.phone-stat-box{flex:1;background:var(--panel);border:1px solid var(--border);padding:12px 10px;}
+.phone-stat-val{font-family:'Anton',sans-serif;font-size:24px;color:var(--blue-bright);}
+.phone-stat-lbl{font-family:'Share Tech Mono',monospace;font-size:7px;letter-spacing:2px;color:var(--text-muted);font-weight:700;}
+.phone-chart{background:var(--panel);border:1px solid var(--border);padding:14px;margin-bottom:16px;height:108px;position:relative;overflow:hidden;}
+.phone-menu{display:flex;flex-direction:column;gap:8px;}
+.phone-menu-item{display:flex;align-items:center;gap:10px;padding:11px 12px;background:var(--panel);border:1px solid var(--border);transition:border-color 0.3s;}
+.phone-menu-item:hover{border-color:var(--blue);}
+.phone-menu-item i{font-size:11px;color:var(--blue);}
+.phone-menu-item span{font-family:'Barlow Condensed',sans-serif;font-size:13px;letter-spacing:1px;font-weight:600;}
+.tech-features{display:flex;flex-direction:column;gap:2px;}
+.tech-feat{display:flex;gap:22px;padding:26px;background:var(--panel);border:1px solid var(--border);transition:all 0.35s;}
+.tech-feat:hover{border-color:rgba(0,200,240,0.25);background:rgba(0,200,240,0.02);transform:translateX(6px);}
+.tech-feat-icon{width:46px;height:46px;min-width:46px;border:1px solid var(--border-light);display:flex;align-items:center;justify-content:center;transition:all 0.35s;}
+.tech-feat:hover .tech-feat-icon{border-color:var(--blue);box-shadow:var(--glow-blue);}
+.tech-feat-icon i{font-size:16px;color:var(--blue);}
+.tech-feat h4{font-family:'Anton',sans-serif;font-size:19px;letter-spacing:2px;margin-bottom:5px;}
+.tech-feat p{font-family:'Barlow Condensed',sans-serif;font-size:14px;color:var(--silver);line-height:1.7;font-weight:500;}
+
+/* ── CULTURE ── */
+#culture{background:var(--charcoal);}
+.culture-quote{font-family:'Anton',sans-serif;font-size:clamp(38px,5.5vw,70px);letter-spacing:3px;line-height:1.05;margin:70px 0;color:var(--white);position:relative;padding-left:44px;}
+.culture-quote::before{content:'';position:absolute;left:0;top:0;bottom:0;width:3px;background:linear-gradient(to bottom,var(--blue),var(--purple));box-shadow:var(--glow-blue);}
+.culture-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:3px;}
+.culture-card{background:var(--panel);border:1px solid var(--border);overflow:hidden;transition:all 0.4s;}
+.culture-card-img{width:100%;height:220px;object-fit:cover;filter:grayscale(25%) contrast(1.1);display:block;transition:all 0.6s;}
+.culture-card:hover .culture-card-img{filter:grayscale(0) contrast(1.15);transform:scale(1.04);}
+.culture-card-body{padding:30px;}
+.culture-card:hover{border-color:rgba(0,200,240,0.2);transform:translateY(-5px);}
+.culture-card i{font-size:22px;color:var(--blue);margin-bottom:14px;display:block;}
+.culture-card h3{font-family:'Anton',sans-serif;font-size:24px;letter-spacing:2px;margin-bottom:10px;}
+.culture-card p{font-family:'Barlow Condensed',sans-serif;font-size:14px;color:var(--silver);line-height:1.85;font-weight:500;}
+
+/* ── SOCIAL WALL ── */
+#social{background:var(--black);}
+.social-wall{display:grid;grid-template-columns:repeat(3,1fr);gap:3px;margin-top:60px;}
+.social-card{background:var(--panel);border:1px solid var(--border);overflow:hidden;position:relative;aspect-ratio:1;}
+.social-card img{width:100%;height:100%;object-fit:cover;filter:grayscale(25%) contrast(1.1);transition:all 0.5s;}
+.social-card:hover img{filter:grayscale(0) contrast(1.15);transform:scale(1.06);}
+.social-overlay{position:absolute;inset:0;background:linear-gradient(to top,rgba(4,8,16,0.92) 0%,transparent 55%);opacity:0;transition:opacity 0.35s;z-index:1;}
+.social-card:hover .social-overlay{opacity:1;}
+.social-quote-card{background:linear-gradient(135deg,rgba(0,200,240,0.06) 0%,rgba(108,31,255,0.06) 100%);border:1px solid rgba(0,200,240,0.18);display:flex;align-items:center;justify-content:center;padding:44px;text-align:center;}
+.social-quote{font-family:'Anton',sans-serif;font-size:clamp(26px,3.5vw,40px);letter-spacing:4px;color:var(--white);line-height:1.05;}
+.social-quote em{display:block;color:var(--blue-bright);font-style:normal;text-shadow:var(--glow-blue);}
+.neon-sign{position:absolute;top:18px;left:18px;font-family:'Anton',sans-serif;font-size:12px;letter-spacing:4px;color:var(--blue-bright);text-shadow:0 0 10px var(--blue),0 0 24px var(--blue);border:1px solid rgba(0,200,240,0.3);padding:6px 14px;z-index:2;background:rgba(4,8,16,0.6);backdrop-filter:blur(4px);}
+
+/* ── MEMBERSHIP ── */
+#membership{background:var(--charcoal);}
+.plans-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:3px;margin-top:70px;}
+.plan-card{background:var(--panel);border:1px solid var(--border);padding:52px 38px;position:relative;overflow:hidden;transition:all 0.45s;}
+.plan-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(to right,transparent,var(--border-light),transparent);transition:background 0.4s;}
+.plan-card.featured::before{background:linear-gradient(to right,var(--blue),var(--blue-bright));}
+.plan-card.featured{background:linear-gradient(160deg,rgba(0,200,240,0.07) 0%,var(--panel) 100%);border-color:rgba(0,200,240,0.25);}
+.plan-card.featured::after{content:'MOST POPULAR';position:absolute;top:26px;right:-34px;background:var(--blue-bright);color:var(--black);font-family:'Share Tech Mono',monospace;font-size:8px;letter-spacing:3px;padding:6px 54px;transform:rotate(45deg);font-weight:700;}
+.plan-card:hover{transform:translateY(-10px);box-shadow:0 40px 80px rgba(0,0,0,0.45);}
+.plan-tier{font-family:'Share Tech Mono',monospace;font-size:10px;letter-spacing:5px;color:var(--blue);margin-bottom:18px;font-weight:700;}
+.plan-name{font-family:'Anton',sans-serif;font-size:48px;letter-spacing:4px;margin-bottom:10px;}
+.plan-price{font-family:'Anton',sans-serif;font-size:64px;color:var(--blue-bright);line-height:1;text-shadow:var(--glow-blue);}
+.plan-period{font-family:'Barlow Condensed',sans-serif;font-size:14px;color:var(--text-muted);margin-bottom:36px;font-weight:600;letter-spacing:2px;}
+.plan-features{list-style:none;display:flex;flex-direction:column;gap:13px;margin-bottom:40px;}
+.plan-features li{display:flex;gap:12px;align-items:flex-start;font-family:'Barlow Condensed',sans-serif;font-size:15px;color:var(--silver);font-weight:600;}
+.plan-features li i{color:var(--blue);font-size:11px;margin-top:3px;flex-shrink:0;}
+.plan-btn{width:100%;padding:15px;background:transparent;border:1px solid rgba(0,200,240,0.4);color:var(--blue-bright);font-family:'Barlow Condensed',sans-serif;font-size:13px;letter-spacing:4px;font-weight:800;text-transform:uppercase;cursor:pointer;transition:all 0.35s;position:relative;overflow:hidden;}
+.plan-btn::before{content:'';position:absolute;inset:0;background:var(--blue-bright);transform:scaleY(0);transform-origin:bottom;transition:transform 0.4s cubic-bezier(0.4,0,0.2,1);}
+.plan-btn:hover::before{transform:scaleY(1);}
+.plan-btn:hover{color:var(--black);}
+.plan-btn span{position:relative;z-index:1;}
+.plan-card.featured .plan-btn{background:var(--blue-bright);color:var(--black);}
+.plan-card.featured .plan-btn::before{background:var(--gold);}
+.plan-card.featured .plan-btn:hover{box-shadow:var(--glow-gold);}
+
+/* ── TIMING ── */
+#timing{background:var(--black);}
+.timing-layout{display:grid;grid-template-columns:1fr 1fr;gap:90px;align-items:center;margin-top:70px;}
+.hours-table{display:flex;flex-direction:column;gap:2px;}
+.hour-row{display:flex;justify-content:space-between;align-items:center;padding:18px 26px;background:var(--panel);border:1px solid var(--border);transition:all 0.3s;}
+.hour-row.today{border-left:2px solid var(--blue-bright);}
+.hour-row:hover{background:rgba(0,200,240,0.03);}
+.hour-day{font-family:'Barlow Condensed',sans-serif;font-size:14px;font-weight:700;letter-spacing:3px;color:var(--steel);}
+.hour-time{font-family:'Share Tech Mono',monospace;font-size:13px;color:var(--blue-bright);font-weight:700;}
+.hour-status{font-family:'Share Tech Mono',monospace;font-size:8px;letter-spacing:3px;padding:4px 11px;border:1px solid;font-weight:700;}
+.hour-status.open{color:#00ff88;border-color:rgba(0,255,136,0.3);}
+.hour-status.prime{color:var(--blue-bright);border-color:rgba(0,200,240,0.3);}
+.crowd-chart{background:var(--panel);border:1px solid var(--border);padding:32px;}
+.crowd-title{font-family:'Share Tech Mono',monospace;font-size:9px;letter-spacing:5px;color:var(--blue);margin-bottom:26px;font-weight:700;}
+.crowd-bars{display:flex;align-items:flex-end;gap:7px;height:110px;}
+.crowd-bar{flex:1;background:var(--border);position:relative;}
+.crowd-bar-fill{position:absolute;bottom:0;left:0;right:0;background:linear-gradient(to top,var(--blue-dim),var(--blue-bright));opacity:0.75;transition:height 0.7s cubic-bezier(0.4,0,0.2,1);}
+.crowd-labels{display:flex;gap:7px;margin-top:10px;}
+.crowd-label{flex:1;text-align:center;font-family:'Share Tech Mono',monospace;font-size:7px;letter-spacing:1px;color:var(--text-muted);font-weight:700;}
+
+/* ── FINAL CTA ── */
+#cta{padding:140px 70px;text-align:center;background:var(--charcoal);position:relative;overflow:hidden;}
+.cta-video-bg{position:absolute;inset:0;}
+.cta-video-bg video{width:100%;height:100%;object-fit:cover;opacity:0.2;}
+.cta-content{position:relative;z-index:2;}
+
+/* ── FOOTER ── */
+footer{background:var(--dark);border-top:1px solid var(--border);padding:90px 70px 42px;}
+.footer-grid{display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:70px;margin-bottom:70px;}
+.footer-brand .nav-logo{font-size:30px;display:block;margin-bottom:18px;}
+.footer-brand p{font-family:'Barlow Condensed',sans-serif;font-size:15px;color:var(--silver);line-height:1.85;max-width:290px;font-weight:500;}
+.footer-social{display:flex;gap:12px;margin-top:26px;}
+.footer-social a{width:40px;height:40px;border:1px solid var(--border-light);display:flex;align-items:center;justify-content:center;color:var(--silver);transition:all 0.35s;text-decoration:none;}
+.footer-social a:hover{border-color:var(--blue);color:var(--blue-bright);box-shadow:var(--glow-blue);}
+.footer-col h4{font-family:'Anton',sans-serif;font-size:17px;letter-spacing:4px;margin-bottom:22px;color:var(--white);}
+.footer-links{list-style:none;display:flex;flex-direction:column;gap:11px;}
+.footer-links a{color:var(--silver);text-decoration:none;font-family:'Barlow Condensed',sans-serif;font-size:14px;letter-spacing:2px;transition:color 0.3s;font-weight:600;}
+.footer-links a:hover{color:var(--blue-bright);}
+.footer-bottom{display:flex;justify-content:space-between;align-items:center;padding-top:32px;border-top:1px solid var(--border);}
+.footer-bottom p{font-family:'Share Tech Mono',monospace;font-size:9px;letter-spacing:4px;color:var(--text-muted);font-weight:700;}
+
+/* ── REVEAL ── */
+.reveal{opacity:0;transform:translateY(35px);transition:all 0.9s cubic-bezier(0.4,0,0.2,1);}
+.reveal.visible{opacity:1;transform:translateY(0);}
+.reveal-left{opacity:0;transform:translateX(-45px);transition:all 0.9s cubic-bezier(0.4,0,0.2,1);}
+.reveal-left.visible{opacity:1;transform:translateX(0);}
+.reveal-right{opacity:0;transform:translateX(45px);transition:all 0.9s cubic-bezier(0.4,0,0.2,1);}
+.reveal-right.visible{opacity:1;transform:translateX(0);}
+.count-num{display:inline-block;}
+
+/* ── ANIMATIONS ── */
+@keyframes fadeUp{from{opacity:0;transform:translateY(35px);}to{opacity:1;transform:translateY(0);}}
+@keyframes fadeIn{from{opacity:0;}to{opacity:1;}}
+@keyframes scrollDrop{0%{transform:translateY(-100%);}100%{transform:translateY(100%);}}
+@keyframes marquee{from{transform:translateX(0);}to{transform:translateX(-50%);}}
+@keyframes dotPulse{0%,100%{box-shadow:0 0 6px var(--gold);opacity:1;}50%{box-shadow:0 0 18px var(--gold),0 0 36px var(--gold);opacity:0.6;}}
+@keyframes rotateBadge{from{transform:rotate(0deg);}to{transform:rotate(360deg);}}
+@keyframes scanlineSweep{0%{top:-60px;}100%{top:110%;}}
+@keyframes chartAnim{from{stroke-dashoffset:320;}to{stroke-dashoffset:0;}}
+
+/* ── RESPONSIVE ── */
+@media(max-width:1100px){
+  #hero{flex-direction:column;}
+  .hero-image-panel{width:100%;height:55vh;}
+  .hero-content-panel{padding:60px 40px 40px;align-items:center;text-align:center;background:rgba(4,8,16,0.95);}
+  .hero-title,.hero-subtitle,.hero-desc{text-align:center;}
+  .hero-desc{margin:0 auto 40px;}
+  .hero-ctas{justify-content:center;}
+  .hero-eyebrow{justify-content:center;}
+  .brand-grid,.equip-layout,.tech-layout,.timing-layout{grid-template-columns:1fr;gap:48px;}
+  .features-grid{grid-template-columns:repeat(2,1fr);}
+  .footer-grid{grid-template-columns:1fr 1fr;}
+  .photo-mosaic{grid-template-columns:1fr 1fr;grid-template-rows:auto;}
+  .photo-mosaic .p1{grid-row:auto;}
+  .zones-header{grid-template-columns:1fr;}
+}
+@media(max-width:768px){
+  nav{padding:16px 24px;}
+  nav.scrolled{padding:12px 24px;}
+  .nav-links,.nav-cta{display:none;}
+  .hamburger{display:flex;}
+  section{padding:90px 24px;}
+  .zones-grid,.lighting-demo,.culture-grid,.plans-grid,.social-wall,.photo-mosaic,.img-strip{grid-template-columns:1fr;}
+  .features-grid{grid-template-columns:1fr 1fr;}
+  .hero-img-badge{display:none;}
+  .brand-pillars{grid-template-columns:1fr;}
+  .footer-grid{grid-template-columns:1fr;}
+  .equip-grid{grid-template-columns:1fr 1fr;}
+  .lighting-hero-content{padding:0 24px;}
+  #cta{padding:100px 24px;}
+  .hero-vertical-accent{display:none;}
+}
+@media(max-width:480px){
+  .features-grid{grid-template-columns:1fr;}
+  .hero-ctas{flex-direction:column;align-items:center;}
+}
+</style>
+</head>
+<body>
+
+<div id="cursor"></div>
+<div id="cursor-ring"></div>
+
+<!-- MOBILE MENU -->
+<div class="mobile-menu" id="mobileMenu">
+  <a href="#brand" onclick="closeMobile()">About</a>
+  <a href="#layout" onclick="closeMobile()">Zones</a>
+  <a href="#equipment" onclick="closeMobile()">Equipment</a>
+  <a href="#tech" onclick="closeMobile()">Tech</a>
+  <a href="#membership" onclick="closeMobile()">Membership</a>
+  <a href="#timing" onclick="closeMobile()">Hours</a>
+</div>
+
+<!-- NAV -->
+<nav id="navbar">
+  <a href="#hero" class="nav-logo">ETHE<span>R</span>IX<div class="nav-logo-dot"></div></a>
+  <ul class="nav-links">
+    <li><a href="#brand">About</a></li>
+    <li><a href="#layout">Zones</a></li>
+    <li><a href="#equipment">Equipment</a></li>
+    <li><a href="#experience">Experience</a></li>
+    <li><a href="#tech">Tech</a></li>
+    <li><a href="#membership">Membership</a></li>
+  </ul>
+  <button class="nav-cta" onclick="document.getElementById('membership').scrollIntoView({behavior:'smooth'})">Join Elite</button>
+  <div class="hamburger" id="hamburger" onclick="toggleMobile()">
+    <span></span><span></span><span></span>
+  </div>
+</nav>
+
+<!-- ═══════════════ HERO — SPLIT LAYOUT ═══════════════ -->
+<section id="hero">
+
+  <!-- Overlays (full width, behind everything) -->
+  <canvas id="hero-canvas"></canvas>
+  <div class="hero-grid-overlay"></div>
+  <div class="hero-scanlines"></div>
+  <div class="scanline-sweep"></div>
+
+  <!-- LEFT: High-quality image panel -->
+  <div class="hero-image-panel">
+    <!--
+      Bright, well-cut fitness model — chiseled physique, high contrast lighting
+      Pexels free-to-use photo
+    -->
+    <img
+      src="https://images.pexels.com/photos/1229356/pexels-photo-1229356.jpeg?auto=compress&cs=tinysrgb&w=1600"
+      alt="Elite Athlete Training at Etherix Gym"
+      id="heroModelImg"
+    />
+
+    <!-- Decorative brackets -->
+    <div class="img-bracket tl"></div>
+    <div class="img-bracket br"></div>
+
+    <!-- Floating stat badges over image -->
+    <div class="hero-img-badge">
+      <div class="hero-img-badge-item">
+        <div>
+          <div class="hero-img-badge-val">2,400</div>
+          <div class="hero-img-badge-lbl">Active Members</div>
+        </div>
+      </div>
+      <div class="hero-img-badge-item">
+        <div>
+          <div class="hero-img-badge-val">48</div>
+          <div class="hero-img-badge-lbl">Equipment Units</div>
+        </div>
+      </div>
+      <div class="hero-img-badge-item">
+        <div>
+          <div class="hero-img-badge-val">16</div>
+          <div class="hero-img-badge-lbl">Zones Designed</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- RIGHT: Text content, right-aligned -->
+  <div class="hero-content-panel">
+    <div class="hero-eyebrow">
+      ELITE FITNESS SYSTEM — EST. 2024
+      <div class="hero-eyebrow-line"></div>
+    </div>
+
+    <h1 class="hero-title">
+      <span class="t1">ETHERIX</span>
+      <span class="t2">GYM</span>
+    </h1>
+
+    <p class="hero-subtitle">Dominate Your Limits</p>
+
+    <p class="hero-desc">An environment engineered for those who refuse to be ordinary. Where precision meets power.</p>
+
+    <div class="hero-ctas">
+      <button class="btn-secondary" onclick="document.getElementById('brand').scrollIntoView({behavior:'smooth'})">Explore System</button>
+      <button class="btn-primary" onclick="document.getElementById('membership').scrollIntoView({behavior:'smooth'})"><span>Join The Elite</span></button>
+    </div>
+  </div>
+
+  <!-- Vertical right accent line -->
+  <div class="hero-vertical-accent"></div>
+
+  <!-- Scroll indicator (bottom-right) -->
+  <div class="hero-scroll">
+    <span>SCROLL</span>
+    <div class="scroll-track"></div>
+  </div>
+
+</section>
+
+<!-- MARQUEE 1 -->
+<div class="marquee-wrap gold-bar">
+  <div class="marquee-track">
+    <span>DOMINATE YOUR LIMITS</span><span class="sep">◆</span>
+    <span>DISCIPLINE IS THE NEW LUXURY</span><span class="sep">◆</span>
+    <span>BECOME WHAT OTHERS CAN'T</span><span class="sep">◆</span>
+    <span>POWER. PRECISION. PRESTIGE.</span><span class="sep">◆</span>
+    <span>DOMINATE YOUR LIMITS</span><span class="sep">◆</span>
+    <span>DISCIPLINE IS THE NEW LUXURY</span><span class="sep">◆</span>
+    <span>BECOME WHAT OTHERS CAN'T</span><span class="sep">◆</span>
+    <span>POWER. PRECISION. PRESTIGE.</span><span class="sep">◆</span>
+  </div>
+</div>
+<div class="divider"></div>
+
+<!-- ═══════════════ BRAND / ABOUT ═══════════════ -->
+<section id="brand">
+  <div class="section-tag">01 — Foundation</div>
+  <div class="brand-grid">
+    <div class="reveal-left">
+      <h2 class="section-title">Built for the<br/><em>Relentless</em></h2>
+      <p class="section-body" style="margin-bottom:26px;">Etherix was conceived not as a gym — but as a system. An environment meticulously engineered to extract the most from every individual who walks through its doors. Where every detail, from spatial flow to lighting temperature, serves your performance.</p>
+      <p class="section-body" style="margin-bottom:44px;">We believe that discipline is the purest form of luxury. That the environment you train in shapes the person you become. Etherix exists for those who demand more — from their space, from their training, from themselves.</p>
+      <div class="prog-wrap">
+        <div class="prog-label"><span>SPATIAL DESIGN</span><span>97%</span></div>
+        <div class="prog-track"><div class="prog-fill" data-width="97"></div></div>
+      </div>
+      <div class="prog-wrap">
+        <div class="prog-label"><span>EQUIPMENT QUALITY</span><span>98%</span></div>
+        <div class="prog-track"><div class="prog-fill" data-width="98"></div></div>
+      </div>
+      <div class="prog-wrap">
+        <div class="prog-label"><span>MEMBER EXPERIENCE</span><span>99%</span></div>
+        <div class="prog-track"><div class="prog-fill" data-width="99"></div></div>
+      </div>
+    </div>
+    <div class="reveal-right">
+      <div class="brand-img-wrap">
+        <div class="brand-frame">
+          <img class="brand-img-main" src="https://images.pexels.com/photos/1552242/pexels-photo-1552242.jpeg" alt="Etherix Training"/>
+          <div class="brand-corner tl"></div>
+          <div class="brand-corner tr"></div>
+          <div class="brand-corner bl"></div>
+          <div class="brand-corner br"></div>
+        </div>
+        <img class="brand-img-secondary" src="https://images.pexels.com/photos/4164766/pexels-photo-4164766.jpeg" alt="Detail"/>
+      </div>
+      <div class="brand-pillars">
+        <div class="pillar"><i class="fas fa-bolt"></i><h4>Power</h4><p>Uncompromising equipment & structure for maximum output.</p></div>
+        <div class="pillar"><i class="fas fa-crosshairs"></i><h4>Precision</h4><p>Every zone, machine, and detail placed with intent.</p></div>
+        <div class="pillar"><i class="fas fa-gem"></i><h4>Prestige</h4><p>Exclusive membership. Elite environment. No compromise.</p></div>
+        <div class="pillar"><i class="fas fa-shield-alt"></i><h4>Discipline</h4><p>Culture of focus, respect, and relentless improvement.</p></div>
+      </div>
+    </div>
+  </div>
+  <div class="img-strip reveal" style="margin-top:44px;">
+    <div class="strip-item"><img src="https://images.pexels.com/photos/841130/pexels-photo-841130.jpeg" alt="Training"/><div class="strip-item-overlay"></div></div>
+    <div class="strip-item"><img src="https://images.pexels.com/photos/1431282/pexels-photo-1431282.jpeg" alt="Strength"/><div class="strip-item-overlay"></div></div>
+    <div class="strip-item"><img src="https://images.pexels.com/photos/949131/pexels-photo-949131.jpeg" alt="Power"/><div class="strip-item-overlay"></div></div>
+    <div class="strip-item"><img src="https://images.pexels.com/photos/2827400/pexels-photo-2827400.jpeg" alt="Lifestyle"/><div class="strip-item-overlay"></div></div>
+  </div>
+</section>
+
+<!-- CINEMATIC VIDEO BREAK 1 -->
+<div class="video-break">
+  <video autoplay muted loop playsinline>
+    <source src="https://videos.pexels.com/video-files/4057408/4057408-uhd_2560_1440_25fps.mp4" type="video/mp4"/>
+  </video>
+  <div class="video-break-overlay"></div>
+  <div class="video-break-content">
+    <div class="video-break-title">NO<br/><em>SHORTCUTS</em></div>
+    <div class="video-break-sub">The only way is through</div>
+  </div>
+</div>
+<div class="divider"></div>
+
+<!-- ═══════════════ ZONES ═══════════════ -->
+<section id="layout">
+  <div class="zones-header">
+    <div>
+      <div class="section-tag">02 — Spatial Architecture</div>
+      <h2 class="section-title reveal">The Perfect<br/><em>Layout System</em></h2>
+    </div>
+    <p class="section-body reveal" style="align-self:end;margin-bottom:0;">Six precision-designed zones. Zero dead space. Every path logical. Every line of sight purposeful. Each zone speaks a different language of intensity.</p>
+  </div>
+  <div class="zones-grid">
+    <div class="zone-card blue reveal">
+      <div class="zone-card-img-wrap"><img class="zone-card-img" src="https://images.pexels.com/photos/4397840/pexels-photo-4397840.jpeg" alt="Cardio Zone"/></div>
+      <div class="zone-color-bar"></div>
+      <div class="zone-card-body">
+        <div class="zone-num">ZONE 01</div>
+        <div class="zone-icon"><i class="fas fa-running"></i></div>
+        <div class="zone-title">Cardio Zone</div>
+        <p class="zone-desc">Treadmills, bikes, rowers, and assault bikes arranged for unobstructed sightlines. RGB blue lighting activates your performance mindset.</p>
+        <span class="zone-badge">RGB BLUE</span>
+      </div>
+    </div>
+    <div class="zone-card red reveal" style="transition-delay:0.1s">
+      <div class="zone-card-img-wrap"><img class="zone-card-img" src="https://images.pexels.com/photos/1552252/pexels-photo-1552252.jpeg" alt="Strength Zone"/></div>
+      <div class="zone-color-bar"></div>
+      <div class="zone-card-body">
+        <div class="zone-num">ZONE 02</div>
+        <div class="zone-icon"><i class="fas fa-dumbbell"></i></div>
+        <div class="zone-title">Strength Zone</div>
+        <p class="zone-desc">Power racks, barbells, cable machines, and free weights. Matte-black equipment. Duplicate setups. No waiting. Red lighting for raw intensity.</p>
+        <span class="zone-badge">RGB RED</span>
+      </div>
+    </div>
+    <div class="zone-card purple reveal" style="transition-delay:0.2s">
+      <div class="zone-card-img-wrap"><img class="zone-card-img" src="https://images.pexels.com/photos/3253501/pexels-photo-3253501.jpeg" alt="Functional Zone"/></div>
+      <div class="zone-color-bar"></div>
+      <div class="zone-card-body">
+        <div class="zone-num">ZONE 03</div>
+        <div class="zone-icon"><i class="fas fa-expand-arrows-alt"></i></div>
+        <div class="zone-title">Functional Zone</div>
+        <p class="zone-desc">Kettlebells, medicine balls, resistance bands, TRX systems. Open floor, rubber matting. Designed for movement, not machines.</p>
+        <span class="zone-badge">RGB PURPLE</span>
+      </div>
+    </div>
+    <div class="zone-card blue reveal" style="transition-delay:0.1s">
+      <div class="zone-card-img-wrap"><img class="zone-card-img" src="https://images.pexels.com/photos/3822906/pexels-photo-3822906.jpeg" alt="Mobility Zone"/></div>
+      <div class="zone-color-bar"></div>
+      <div class="zone-card-body">
+        <div class="zone-num">ZONE 04</div>
+        <div class="zone-icon"><i class="fas fa-spa"></i></div>
+        <div class="zone-title">Mobility & Stretch</div>
+        <p class="zone-desc">Quiet cooldown area. Foam rollers, mats, stretch stations. Serene ambient lighting. Separate from the intensity of the main floor.</p>
+        <span class="zone-badge">AMBIENT</span>
+      </div>
+    </div>
+    <div class="zone-card red reveal" style="transition-delay:0.2s">
+      <div class="zone-card-img-wrap"><img class="zone-card-img" src="https://images.pexels.com/photos/4162449/pexels-photo-4162449.jpeg" alt="Group Studio"/></div>
+      <div class="zone-color-bar"></div>
+      <div class="zone-card-body">
+        <div class="zone-num">ZONE 05</div>
+        <div class="zone-icon"><i class="fas fa-users"></i></div>
+        <div class="zone-title">Group Studio</div>
+        <p class="zone-desc">Dedicated class studio for HIIT, yoga, Zumba, and functional boot camps. Soundproofed, sprung flooring, wall-to-wall mirrors.</p>
+        <span class="zone-badge">STUDIO</span>
+      </div>
+    </div>
+    <div class="zone-card purple reveal" style="transition-delay:0.3s">
+      <div class="zone-card-img-wrap"><img class="zone-card-img" src="https://images.pexels.com/photos/1229356/pexels-photo-1229356.jpeg" alt="Aesthetic Zone"/></div>
+      <div class="zone-color-bar"></div>
+      <div class="zone-card-body">
+        <div class="zone-num">ZONE 06</div>
+        <div class="zone-icon"><i class="fas fa-brain"></i></div>
+        <div class="zone-title">Aesthetic Zone</div>
+        <p class="zone-desc">Isolation machines, cable flyes, finisher setups. Frameless LED-backlit mirrors. The zone where physique is crafted and every rep is seen.</p>
+        <span class="zone-badge">RGB PURPLE</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- ═══════════════ EQUIPMENT ═══════════════ -->
+<section id="equipment">
+  <div class="section-tag">03 — Arsenal</div>
+  <div class="equip-layout">
+    <div>
+      <h2 class="section-title reveal-left">Premium<br/><em>Equipment</em><br/>Manifest</h2>
+      <p class="section-body reveal-left" style="margin-bottom:38px;">Every machine chosen for quality, not quantity. Matte-black finishes only. Smooth bearings. Clean cables. Zero rattling, zero rust, zero waiting.</p>
+      <div class="equip-list">
+        <div class="equip-item reveal-left"><i class="fas fa-dumbbell"></i><span class="equip-name">Olympic Barbells with Smooth Sleeves</span><span class="equip-tag">PREMIUM</span></div>
+        <div class="equip-item reveal-left"><i class="fas fa-grip-lines"></i><span class="equip-name">Power Racks with Safety Catches</span><span class="equip-tag">DUPLICATE</span></div>
+        <div class="equip-item reveal-left"><i class="fas fa-sliders-h"></i><span class="equip-name">Adjustable Dual-Stack Cable Machines</span><span class="equip-tag">DUAL-STACK</span></div>
+        <div class="equip-item reveal-left"><i class="fas fa-weight-hanging"></i><span class="equip-name">Free Weights — 1kg Increments</span><span class="equip-tag">FULL RANGE</span></div>
+        <div class="equip-item reveal-left"><i class="fas fa-running"></i><span class="equip-name">Treadmills, Assault Bikes, Rowers</span><span class="equip-tag">CARDIO+</span></div>
+        <div class="equip-item reveal-left"><i class="fas fa-circle"></i><span class="equip-name">Kettlebells, Medicine Balls, Bands</span><span class="equip-tag">FUNCTIONAL</span></div>
+        <div class="equip-item reveal-left"><i class="fas fa-couch"></i><span class="equip-name">Adjustable & Flat Benches</span><span class="equip-tag">PADDED</span></div>
+        <div class="equip-item reveal-left"><i class="fas fa-compress-arrows-alt"></i><span class="equip-name">Isolation & Plate-Loaded Machines</span><span class="equip-tag">BIOMECH</span></div>
+      </div>
+    </div>
+    <div class="reveal-right">
+      <img class="equip-main-img" src="https://images.pexels.com/photos/1552252/pexels-photo-1552252.jpeg" alt="Equipment"/>
+      <div class="equip-grid">
+        <img src="https://images.pexels.com/photos/4164766/pexels-photo-4164766.jpeg" alt="Weights"/>
+        <img src="https://images.pexels.com/photos/4162438/pexels-photo-4162438.jpeg" alt="Cables"/>
+        <img src="https://images.pexels.com/photos/2204196/pexels-photo-2204196.jpeg" alt="Rack"/>
+      </div>
+      <div class="equip-specs">
+        <div class="spec-item reveal"><div class="spec-val count-num" data-target="48">0</div><div class="spec-key">Equipment Units</div></div>
+        <div class="spec-item reveal"><div class="spec-val count-num" data-target="0">0</div><div class="spec-key" style="color:var(--blue)">Wait Time (Min)</div></div>
+        <div class="spec-item reveal"><div class="spec-val count-num" data-target="100">0</div><div class="spec-key">Maintained Daily (%)</div></div>
+        <div class="spec-item reveal"><div class="spec-val">24/7</div><div class="spec-key">Service Protocol</div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- ═══════════════ LIGHTING ═══════════════ -->
+<section id="lighting" style="padding:130px 0;padding-bottom:0;">
+  <div style="padding:0 70px;">
+    <div class="section-tag">04 — Atmospheric Lighting</div>
+    <h2 class="section-title reveal">RGB Zone<br/><em>Lighting System</em></h2>
+    <p class="section-body reveal" style="margin-bottom:50px;">Lighting is not decoration — it is environmental programming. Each zone uses precision-calibrated LED systems to condition your nervous system for the work ahead.</p>
+  </div>
+
+  <div class="lighting-hero">
+    <video autoplay muted loop playsinline>
+      <source src="https://videos.pexels.com/video-files/6740603/6740603-uhd_2560_1440_25fps.mp4" type="video/mp4"/>
+    </video>
+    <div class="lighting-hero-overlay"></div>
+    <div class="lighting-hero-content">
+      <div class="section-tag" style="margin-bottom:10px;">ENGINEERED ATMOSPHERE</div>
+      <div style="font-family:'Anton',sans-serif;font-size:clamp(40px,6vw,80px);letter-spacing:3px;line-height:0.9;max-width:600px;">
+        LIGHT THAT<br/><span style="color:var(--blue-bright);text-shadow:var(--glow-blue);">PERFORMS</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="lighting-demo">
+    <div class="light-zone cardio reveal">
+      <img class="light-zone-img" src="https://images.pexels.com/photos/4397840/pexels-photo-4397840.jpeg" alt="Cardio"/>
+      <div class="light-zone-tint"></div>
+      <div class="light-zone-content">
+        <div class="light-zone-title">CARDIO ZONE</div>
+        <p class="light-zone-desc">Cool electric blue LEDs. Activating. Energizing. Designed to elevate heart rate and sustain endurance output.</p>
+      </div>
+      <div class="light-strip"></div>
+    </div>
+    <div class="light-zone strength reveal" style="transition-delay:0.15s">
+      <img class="light-zone-img" src="https://images.pexels.com/photos/841130/pexels-photo-841130.jpeg" alt="Strength"/>
+      <div class="light-zone-tint"></div>
+      <div class="light-zone-content">
+        <div class="light-zone-title">STRENGTH ZONE</div>
+        <p class="light-zone-desc">Deep red accents. Primal. Psychologically proven to increase power output and aggression in compound lifts.</p>
+      </div>
+      <div class="light-strip"></div>
+    </div>
+    <div class="light-zone aesthetic reveal" style="transition-delay:0.3s">
+      <img class="light-zone-img" src="https://images.pexels.com/photos/1229356/pexels-photo-1229356.jpeg" alt="Aesthetic"/>
+      <div class="light-zone-tint"></div>
+      <div class="light-zone-content">
+        <div class="light-zone-title">AESTHETIC ZONE</div>
+        <p class="light-zone-desc">Rich deep purple. Cinematic. Flattering for muscle definition. Backlit mirror panels throughout.</p>
+      </div>
+      <div class="light-strip"></div>
+    </div>
+  </div>
+</section>
+
+<!-- MARQUEE 2 -->
+<div class="marquee-wrap dark-bar" style="margin-top:3px;">
+  <div class="marquee-track rev dark-bar">
+    <span>MIRRORS & DEPTH</span><span class="sep">◆</span>
+    <span>CLEANLINESS = PRESTIGE</span><span class="sep">◆</span>
+    <span>VENTILATION & AIR QUALITY</span><span class="sep">◆</span>
+    <span>SOUND DESIGN</span><span class="sep">◆</span>
+    <span>PREMIUM LOCKER ROOMS</span><span class="sep">◆</span>
+    <span>SAFETY PROTOCOLS</span><span class="sep">◆</span>
+    <span>MIRRORS & DEPTH</span><span class="sep">◆</span>
+    <span>CLEANLINESS = PRESTIGE</span><span class="sep">◆</span>
+    <span>VENTILATION & AIR QUALITY</span><span class="sep">◆</span>
+    <span>SOUND DESIGN</span><span class="sep">◆</span>
+  </div>
+</div>
+
+<!-- ═══════════════ EXPERIENCE ═══════════════ -->
+<section id="experience">
+  <div class="section-tag">05 — The Experience Stack</div>
+  <h2 class="section-title reveal">Every Detail<br/><em>Engineered</em></h2>
+
+  <div class="photo-mosaic">
+    <div class="pm-item p1"><img src="https://images.pexels.com/photos/1552242/pexels-photo-1552242.jpeg" alt="Training"/></div>
+    <div class="pm-item"><img src="https://images.pexels.com/photos/3253501/pexels-photo-3253501.jpeg" alt="Functional"/></div>
+    <div class="pm-item"><img src="https://images.pexels.com/photos/2827400/pexels-photo-2827400.jpeg" alt="Lifestyle"/></div>
+    <div class="pm-item"><img src="https://images.pexels.com/photos/4162449/pexels-photo-4162449.jpeg" alt="Group"/></div>
+    <div class="pm-item"><img src="https://images.pexels.com/photos/3822906/pexels-photo-3822906.jpeg" alt="Recovery"/></div>
+  </div>
+
+  <div class="features-grid">
+    <div class="feat-card reveal"><div class="feat-icon"><i class="fas fa-expand"></i></div><h3 class="feat-title">Full-Wall Mirrors</h3><p class="feat-text">Frameless, floor-to-ceiling. LED-backlit. Zero distortions. Positioned for form checks and aesthetic feedback at every angle.</p></div>
+    <div class="feat-card reveal" style="transition-delay:0.1s"><div class="feat-icon"><i class="fas fa-broom"></i></div><h3 class="feat-title">Hygiene Protocol</h3><p class="feat-text">Wipe stations every 8 meters. Constant staff patrol. No sweat residue, no odor. Clean floors, pristine lockers — always.</p></div>
+    <div class="feat-card reveal" style="transition-delay:0.2s"><div class="feat-icon"><i class="fas fa-wind"></i></div><h3 class="feat-title">Air Architecture</h3><p class="feat-text">Precision HVAC zoning. Fresh air circulation. Balanced temperature. Signature woody-citrus scent diffused subtly throughout.</p></div>
+    <div class="feat-card reveal" style="transition-delay:0.3s"><div class="feat-icon"><i class="fas fa-volume-up"></i></div><h3 class="feat-title">Sound Design</h3><p class="feat-text">Audiophile-grade ceiling speakers. Calibrated per zone. Curated playlists — peak energy during prime time, calm in the morning.</p></div>
+    <div class="feat-card reveal" style="transition-delay:0.1s"><div class="feat-icon"><i class="fas fa-door-open"></i></div><h3 class="feat-title">Premium Lockers</h3><p class="feat-text">Digital locking system. Bench seating. Dry floors. Clean showers with consistent pressure. Hair dryers, toiletries, premium fixtures.</p></div>
+    <div class="feat-card reveal" style="transition-delay:0.2s"><div class="feat-icon"><i class="fas fa-first-aid"></i></div><h3 class="feat-title">Safety System</h3><p class="feat-text">CPR-trained staff at all times. First aid stations. Emergency protocols. Spotter zones marked. Zero broken equipment policy.</p></div>
+    <div class="feat-card reveal" style="transition-delay:0.3s"><div class="feat-icon"><i class="fas fa-tint"></i></div><h3 class="feat-title">Hydration Points</h3><p class="feat-text">Filtered water stations every zone. Chalk availability. Grip accessories. Anti-slip flooring throughout. Towel culture enforced.</p></div>
+    <div class="feat-card reveal" style="transition-delay:0.4s"><div class="feat-icon"><i class="fas fa-parking"></i></div><h3 class="feat-title">Accessibility</h3><p class="feat-text">Smooth entry/exit. QR check-in. Adequate parking. Controlled crowd management. Every visit seamless from arrival to exit.</p></div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- ═══════════════ TECH ═══════════════ -->
+<section id="tech">
+  <div class="section-tag">06 — Cyber Integration</div>
+  <div class="tech-layout">
+    <div class="reveal-left">
+      <h2 class="section-title">Smart Gym<br/><em>Technology</em><br/>Stack</h2>
+      <p class="section-body" style="margin-bottom:44px;">Etherix is not just physical infrastructure. It's a connected performance ecosystem. Every touchpoint digitized. Every metric visible. Every session optimized.</p>
+      <div class="tech-features">
+        <div class="tech-feat"><div class="tech-feat-icon"><i class="fas fa-qrcode"></i></div><div><h4>QR Check-In</h4><p>Contactless entry. Instant access. No friction, no queues.</p></div></div>
+        <div class="tech-feat"><div class="tech-feat-icon"><i class="fas fa-mobile-alt"></i></div><div><h4>Member App</h4><p>Workout tracking, booking, progress analytics, and zone occupancy.</p></div></div>
+        <div class="tech-feat"><div class="tech-feat-icon"><i class="fas fa-tablet-alt"></i></div><div><h4>Machine QR Codes</h4><p>Scan any machine for HD tutorial videos and proper form guides.</p></div></div>
+        <div class="tech-feat"><div class="tech-feat-icon"><i class="fas fa-tv"></i></div><div><h4>Digital Screens</h4><p>Real-time stats, motivational content, and zone capacity displays.</p></div></div>
+        <div class="tech-feat"><div class="tech-feat-icon"><i class="fas fa-wifi"></i></div><div><h4>Premium Wi-Fi</h4><p>Stable, high-speed wireless across every zone. Always on, never throttled.</p></div></div>
+      </div>
+    </div>
+    <div class="reveal-right">
+      <div class="phone-frame">
+        <div class="phone-screen">
+          <div class="phone-ui">
+            <div class="phone-header"><span>ETHERIX APP</span><span>v3.2</span></div>
+            <div class="phone-stat-row">
+              <div class="phone-stat-box"><div class="phone-stat-val">847</div><div class="phone-stat-lbl">CAL BURNED</div></div>
+              <div class="phone-stat-box"><div class="phone-stat-val">72</div><div class="phone-stat-lbl">AVG BPM</div></div>
+              <div class="phone-stat-box"><div class="phone-stat-val">58</div><div class="phone-stat-lbl">MIN</div></div>
+            </div>
+            <div class="phone-chart">
+              <svg width="100%" height="100%" style="position:absolute;bottom:14px;left:14px;" viewBox="0 0 200 60" preserveAspectRatio="none">
+                <polyline points="0,55 20,40 40,48 60,25 80,30 100,15 120,22 140,10 160,18 180,8 200,12" fill="none" stroke="#00c8f0" stroke-width="1.5" stroke-dasharray="320" style="animation:chartAnim 2s 1s forwards;stroke-dashoffset:320;"/>
+                <polyline points="0,55 20,40 40,48 60,25 80,30 100,15 120,22 140,10 160,18 180,8 200,12 200,60 0,60" fill="rgba(0,200,240,0.06)" stroke="none"/>
+              </svg>
+            </div>
+            <div class="phone-menu">
+              <div class="phone-menu-item"><i class="fas fa-fire"></i><span>Today's Program</span></div>
+              <div class="phone-menu-item"><i class="fas fa-chart-line"></i><span>Progress Report</span></div>
+              <div class="phone-menu-item"><i class="fas fa-calendar"></i><span>Book a Class</span></div>
+              <div class="phone-menu-item"><i class="fas fa-user-shield"></i><span>My Membership</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CINEMATIC VIDEO BREAK 2 -->
+<div class="video-break" style="height:55vh;">
+  <video autoplay muted loop playsinline>
+    <source src="https://videos.pexels.com/video-files/5327587/5327587-uhd_2560_1440_25fps.mp4" type="video/mp4"/>
+  </video>
+  <div class="video-break-overlay"></div>
+  <div class="video-break-content">
+    <div class="video-break-title">THE<br/><em>CULTURE</em></div>
+    <div class="video-break-sub">Discipline. Respect. Results.</div>
+  </div>
+</div>
+<div class="divider"></div>
+
+<!-- ═══════════════ CULTURE ═══════════════ -->
+<section id="culture">
+  <div class="section-tag">07 — Culture Code</div>
+  <h2 class="section-title reveal">The Etherix<br/><em>Standard</em></h2>
+  <blockquote class="culture-quote reveal">"Discipline is not<br/>a punishment —<br/><span style="color:var(--blue-bright);">it's your advantage.</span>"</blockquote>
+  <div class="culture-grid">
+    <div class="culture-card reveal">
+      <img class="culture-card-img" src="https://images.pexels.com/photos/1552242/pexels-photo-1552242.jpeg" alt="Culture"/>
+      <div class="culture-card-body">
+        <i class="fas fa-redo-alt"></i>
+        <h3>Re-rack. Always.</h3>
+        <p>Weights returned. Equipment respected. No one waits because someone was lazy. This is non-negotiable and enforced without exception.</p>
+      </div>
+    </div>
+    <div class="culture-card reveal" style="transition-delay:0.15s">
+      <img class="culture-card-img" src="https://images.pexels.com/photos/4162449/pexels-photo-4162449.jpeg" alt="Community"/>
+      <div class="culture-card-body">
+        <i class="fas fa-handshake"></i>
+        <h3>No Ego. No Exceptions.</h3>
+        <p>Beginners welcomed. Experienced respected. Ego checked at the door. The discipline of humility is as important as any rep.</p>
+      </div>
+    </div>
+    <div class="culture-card reveal" style="transition-delay:0.3s">
+      <img class="culture-card-img" src="https://images.pexels.com/photos/3822906/pexels-photo-3822906.jpeg" alt="Staff"/>
+      <div class="culture-card-body">
+        <i class="fas fa-id-badge"></i>
+        <h3>Elite Staff Only.</h3>
+        <p>Professional trainers. Certified, fit, approachable. Dressed in branded black. They represent the system as much as the members do.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- ═══════════════ SOCIAL WALL ═══════════════ -->
+<section id="social">
+  <div class="section-tag">08 — The Visual Identity</div>
+  <h2 class="section-title reveal">Designed to<br/><em>Be Seen</em></h2>
+  <div class="social-wall">
+    <div class="social-card"><img src="https://images.pexels.com/photos/841130/pexels-photo-841130.jpeg" alt="Training"/><div class="social-overlay"></div><div class="neon-sign">ETHERIX GYM</div></div>
+    <div class="social-quote-card"><div><div class="social-quote">BECOME<br/><em>WHAT OTHERS</em><br/>CAN'T</div><div style="margin-top:22px;font-family:'Share Tech Mono',monospace;font-size:8px;letter-spacing:5px;color:var(--text-muted);font-weight:700;">#ETHERIX</div></div></div>
+    <div class="social-card"><img src="https://images.pexels.com/photos/1431282/pexels-photo-1431282.jpeg" alt="Power"/><div class="social-overlay"></div></div>
+    <div class="social-card"><img src="https://images.pexels.com/photos/949131/pexels-photo-949131.jpeg" alt="Precision"/><div class="social-overlay"></div></div>
+    <div class="social-card" style="background:var(--panel);display:flex;align-items:center;justify-content:center;border:1px solid var(--border);">
+      <div style="text-align:center;">
+        <div style="font-family:'Anton',sans-serif;font-size:clamp(52px,7vw,88px);color:transparent;-webkit-text-stroke:1px var(--blue-bright);text-shadow:var(--glow-blue);letter-spacing:5px;">POWER</div>
+        <div style="font-family:'Share Tech Mono',monospace;font-size:8px;letter-spacing:6px;color:var(--text-muted);font-weight:700;margin-top:8px;">PRECISION · PRESTIGE</div>
+      </div>
+    </div>
+    <div class="social-card"><img src="https://images.pexels.com/photos/2827400/pexels-photo-2827400.jpeg" alt="Lifestyle"/><div class="social-overlay"></div></div>
+    <div class="social-card"><img src="https://images.pexels.com/photos/3253501/pexels-photo-3253501.jpeg" alt="Functional"/><div class="social-overlay"></div></div>
+    <div class="social-card"><img src="https://images.pexels.com/photos/4397840/pexels-photo-4397840.jpeg" alt="Cardio"/><div class="social-overlay"></div></div>
+    <div class="social-card"><img src="https://images.pexels.com/photos/4162449/pexels-photo-4162449.jpeg" alt="Group"/><div class="social-overlay"></div></div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- ═══════════════ MEMBERSHIP ═══════════════ -->
+<section id="membership">
+  <div class="section-tag">09 — Access Tiers</div>
+  <h2 class="section-title reveal">Choose Your<br/><span class="gold">Level</span></h2>
+  <p class="section-body reveal">Three levels of access. One standard of excellence. All members train in the same premium environment — what differs is the depth of your commitment.</p>
+  <div class="plans-grid">
+    <div class="plan-card reveal">
+      <div class="plan-tier">TIER — 01</div>
+      <div class="plan-name">INITIATE</div>
+      <div class="plan-price">₹2,499</div>
+      <div class="plan-period">/ month</div>
+      <ul class="plan-features">
+        <li><i class="fas fa-check"></i>Full gym floor access</li>
+        <li><i class="fas fa-check"></i>Cardio & strength zones</li>
+        <li><i class="fas fa-check"></i>Locker room access</li>
+        <li><i class="fas fa-check"></i>Etherix member app</li>
+        <li><i class="fas fa-check"></i>QR check-in system</li>
+        <li style="opacity:0.3"><i class="fas fa-times"></i>Group classes</li>
+        <li style="opacity:0.3"><i class="fas fa-times"></i>Personal trainer sessions</li>
+      </ul>
+      <button class="plan-btn"><span>Select Initiate</span></button>
+    </div>
+    <div class="plan-card featured reveal" style="transition-delay:0.15s">
+      <div class="plan-tier">TIER — 02</div>
+      <div class="plan-name">ELITE</div>
+      <div class="plan-price">₹4,999</div>
+      <div class="plan-period">/ month</div>
+      <ul class="plan-features">
+        <li><i class="fas fa-check"></i>All Initiate features</li>
+        <li><i class="fas fa-check"></i>Unlimited group classes</li>
+        <li><i class="fas fa-check"></i>Priority zone access</li>
+        <li><i class="fas fa-check"></i>Monthly body assessment</li>
+        <li><i class="fas fa-check"></i>Nutrition guidance portal</li>
+        <li><i class="fas fa-check"></i>2 PT sessions/month</li>
+        <li><i class="fas fa-check"></i>Guest pass (1/month)</li>
+      </ul>
+      <button class="plan-btn"><span>Select Elite</span></button>
+    </div>
+    <div class="plan-card reveal" style="transition-delay:0.3s">
+      <div class="plan-tier">TIER — 03</div>
+      <div class="plan-name">APEX</div>
+      <div class="plan-price">₹8,999</div>
+      <div class="plan-period">/ month</div>
+      <ul class="plan-features">
+        <li><i class="fas fa-check"></i>All Elite features</li>
+        <li><i class="fas fa-check"></i>Unlimited PT sessions</li>
+        <li><i class="fas fa-check"></i>Custom program design</li>
+        <li><i class="fas fa-check"></i>Weekly progress reviews</li>
+        <li><i class="fas fa-check"></i>Exclusive Apex lounge</li>
+        <li><i class="fas fa-check"></i>Unlimited guest passes</li>
+        <li><i class="fas fa-check"></i>Direct trainer WhatsApp</li>
+      </ul>
+      <button class="plan-btn"><span>Select Apex</span></button>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- ═══════════════ TIMING ═══════════════ -->
+<section id="timing">
+  <div class="section-tag">10 — Access Hours</div>
+  <div class="timing-layout">
+    <div>
+      <h2 class="section-title reveal-left">Built Around<br/><em>Your Schedule</em></h2>
+      <p class="section-body reveal-left" style="margin-bottom:38px;">Early risers. Late grinders. Weekend warriors. Etherix never closes its doors to those committed to showing up.</p>
+      <div class="hours-table">
+        <div class="hour-row today"><span class="hour-day">MON — FRI</span><span class="hour-time">05:00 — 23:00</span><span class="hour-status prime">PRIME</span></div>
+        <div class="hour-row"><span class="hour-day">SATURDAY</span><span class="hour-time">05:30 — 22:00</span><span class="hour-status open">OPEN</span></div>
+        <div class="hour-row"><span class="hour-day">SUNDAY</span><span class="hour-time">07:00 — 20:00</span><span class="hour-status open">OPEN</span></div>
+        <div class="hour-row"><span class="hour-day">PUBLIC HOLIDAYS</span><span class="hour-time">08:00 — 18:00</span><span class="hour-status open">OPEN</span></div>
+      </div>
+    </div>
+    <div class="reveal-right">
+      <div class="crowd-chart">
+        <div class="crowd-title">CROWD DENSITY — TYPICAL WEEKDAY</div>
+        <div class="crowd-bars" id="crowdBars"></div>
+        <div class="crowd-labels">
+          <div class="crowd-label">5AM</div><div class="crowd-label">7AM</div><div class="crowd-label">9AM</div>
+          <div class="crowd-label">11AM</div><div class="crowd-label">1PM</div><div class="crowd-label">3PM</div>
+          <div class="crowd-label">5PM</div><div class="crowd-label">7PM</div><div class="crowd-label">9PM</div>
+          <div class="crowd-label">11PM</div>
+        </div>
+      </div>
+      <div style="margin-top:3px;display:grid;grid-template-columns:1fr 1fr;gap:3px;">
+        <div class="spec-item"><div class="spec-val" style="font-size:24px;color:var(--blue-bright)">APEX</div><div class="spec-key">LOUNGE ACCESS</div></div>
+        <div class="spec-item"><div class="spec-val" style="font-size:24px;color:var(--blue-bright)">QR</div><div class="spec-key">ENTRY SYSTEM</div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- ═══════════════ FINAL CTA ═══════════════ -->
+<section id="cta">
+  <div class="cta-video-bg">
+    <video autoplay muted loop playsinline>
+      <source src="https://videos.pexels.com/video-files/6996273/6996273-uhd_2560_1440_25fps.mp4" type="video/mp4"/>
+    </video>
+  </div>
+  <div class="cta-content">
+    <div class="section-tag reveal" style="justify-content:center;">READY</div>
+    <h2 class="section-title reveal" style="font-size:clamp(58px,9vw,120px);margin:0 auto 22px;max-width:880px;">Your<br/><em>Transformation</em><br/>Begins Now</h2>
+    <p style="font-family:'Barlow Condensed',sans-serif;font-size:18px;color:var(--silver);margin:0 auto 54px;max-width:500px;font-weight:500;letter-spacing:1px;line-height:1.8;" class="reveal">The system is built. The environment is perfect. The only variable left is you. Join Etherix and never look back.</p>
+    <div class="hero-ctas reveal" style="opacity:1;animation:none;">
+      <button class="btn-primary" onclick="document.getElementById('membership').scrollIntoView({behavior:'smooth'})"><span>Start Your Transformation</span></button>
+      <button class="btn-secondary">Schedule a Tour</button>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════ FOOTER ═══════════════ -->
+<footer>
+  <div class="footer-grid">
+    <div class="footer-brand">
+      <a href="#hero" class="nav-logo">ETHE<span>R</span>IX<div class="nav-logo-dot"></div></a>
+      <p>An elite fitness system engineered for those who demand more from their environment, their training, and themselves. Discipline is the new luxury.</p>
+      <div class="footer-social">
+        <a href="#"><i class="fab fa-instagram"></i></a>
+        <a href="#"><i class="fab fa-twitter"></i></a>
+        <a href="#"><i class="fab fa-youtube"></i></a>
+        <a href="#"><i class="fab fa-linkedin"></i></a>
+      </div>
+    </div>
+    <div class="footer-col">
+      <h4>Navigate</h4>
+      <ul class="footer-links">
+        <li><a href="#brand">About</a></li>
+        <li><a href="#layout">Zone Design</a></li>
+        <li><a href="#equipment">Equipment</a></li>
+        <li><a href="#lighting">Lighting</a></li>
+        <li><a href="#experience">Experience</a></li>
+      </ul>
+    </div>
+    <div class="footer-col">
+      <h4>System</h4>
+      <ul class="footer-links">
+        <li><a href="#tech">Tech Stack</a></li>
+        <li><a href="#culture">Culture Code</a></li>
+        <li><a href="#social">Aesthetic</a></li>
+        <li><a href="#membership">Membership</a></li>
+        <li><a href="#timing">Hours</a></li>
+      </ul>
+    </div>
+    <div class="footer-col">
+      <h4>Contact</h4>
+      <ul class="footer-links">
+        <li><a href="#">Kalyan, Mumbai</a></li>
+        <li><a href="#">Maharashtra, India</a></li>
+        <li><a href="#">info@etherixgym.com</a></li>
+        <li><a href="#">+91 98765 43210</a></li>
+        <li><a href="#">Book a Tour</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <p>© 2024 ETHERIX GYM — ALL RIGHTS RESERVED</p>
+    <p>POWER · PRECISION · PRESTIGE</p>
+  </div>
+</footer>
+
+<script>
+// ── HERO MODEL IMAGE — try best fit, fallback chain ──
+(function(){
+  // Curated Pexels free images of bright, well-cut fitness models
+  const heroImages = [
+    // Shredded male fitness model, bright dramatic lighting
+    'https://images.pexels.com/photos/1552242/pexels-photo-1552242.jpeg?auto=compress&cs=tinysrgb&w=1600',
+    // Athletic physique, studio lighting
+    'https://images.pexels.com/photos/1431283/pexels-photo-1431283.jpeg?auto=compress&cs=tinysrgb&w=1600',
+    // Muscular athlete, high contrast
+    'https://images.pexels.com/photos/841130/pexels-photo-841130.jpeg?auto=compress&cs=tinysrgb&w=1600',
+  ];
+  const img = document.getElementById('heroModelImg');
+  if (!img) return;
+  // Primary: well-lit, bright physique shot
+  img.src = 'https://images.pexels.com/photos/1229356/pexels-photo-1229356.jpeg?auto=compress&cs=tinysrgb&w=1600';
+  let fallbackIndex = 0;
+  img.onerror = function() {
+    if (fallbackIndex < heroImages.length) {
+      img.src = heroImages[fallbackIndex++];
+    }
+  };
+})();
+
+// ── CUSTOM CURSOR ──
+const cursor = document.getElementById('cursor');
+const ring = document.getElementById('cursor-ring');
+let mx=0,my=0,rx=0,ry=0;
+document.addEventListener('mousemove',e=>{
+  mx=e.clientX;my=e.clientY;
+  cursor.style.left=mx+'px';cursor.style.top=my+'px';
+});
+(function animRing(){
+  rx+=(mx-rx)*0.1;ry+=(my-ry)*0.1;
+  ring.style.left=rx+'px';ring.style.top=ry+'px';
+  requestAnimationFrame(animRing);
+})();
+document.querySelectorAll('a,button,.zone-card,.feat-card,.plan-card,.culture-card').forEach(el=>{
+  el.addEventListener('mouseenter',()=>{ring.style.transform='translate(-50%,-50%) scale(2.2)';ring.style.borderColor='rgba(212,168,68,0.6)';});
+  el.addEventListener('mouseleave',()=>{ring.style.transform='translate(-50%,-50%) scale(1)';ring.style.borderColor='rgba(0,200,240,0.4)';});
+});
+
+// ── NAV ──
+const navbar = document.getElementById('navbar');
+window.addEventListener('scroll',()=>{navbar.classList.toggle('scrolled',window.scrollY>60);});
+function toggleMobile(){document.getElementById('mobileMenu').classList.toggle('open');}
+function closeMobile(){document.getElementById('mobileMenu').classList.remove('open');}
+
+// ── THREE.JS HERO PARTICLES ──
+(function(){
+  const canvas = document.getElementById('hero-canvas');
+  if(!canvas) return;
+  const renderer = new THREE.WebGLRenderer({canvas,alpha:true,antialias:true});
+  renderer.setPixelRatio(Math.min(devicePixelRatio,2));
+  renderer.setSize(window.innerWidth,window.innerHeight);
+  const scene = new THREE.Scene();
+  const camera = new THREE.PerspectiveCamera(65,window.innerWidth/window.innerHeight,0.1,100);
+  camera.position.set(0,0,6);
+
+  const shapes=[];
+  const shapeConfigs=[
+    {geo:new THREE.OctahedronGeometry(0.45,0),color:0x00c8f0,pos:[-3,0.8,-2],speed:0.004},
+    {geo:new THREE.TetrahedronGeometry(0.5,0),color:0x6c1fff,pos:[3.5,0.2,-3],speed:0.003},
+    {geo:new THREE.IcosahedronGeometry(0.35,0),color:0xff1744,pos:[0,1.5,-4],speed:0.005},
+    {geo:new THREE.OctahedronGeometry(0.28,0),color:0x00e5ff,pos:[-4.5,-0.5,-3],speed:0.0035},
+    {geo:new THREE.TetrahedronGeometry(0.4,0),color:0xd4a844,pos:[4.5,1,-2],speed:0.0028},
+  ];
+  shapeConfigs.forEach((c,i)=>{
+    const m=new THREE.MeshBasicMaterial({color:c.color,wireframe:true,transparent:true,opacity:0.15});
+    const mesh=new THREE.Mesh(c.geo,m);
+    mesh.position.set(...c.pos);
+    mesh.userData={speed:c.speed,floatAmp:0.2+i*0.06,floatOff:i*1.1,basePos:[...c.pos]};
+    shapes.push(mesh);scene.add(mesh);
+  });
+
+  const pts=[];
+  for(let i=0;i<160;i++){pts.push((Math.random()-0.5)*26,(Math.random()-0.5)*16,(Math.random()-0.5)*14);}
+  const ptGeo=new THREE.BufferGeometry();
+  ptGeo.setAttribute('position',new THREE.Float32BufferAttribute(pts,3));
+  scene.add(new THREE.Points(ptGeo,new THREE.PointsMaterial({color:0x00c8f0,size:0.025,transparent:true,opacity:0.22})));
+
+  let mouse={x:0,y:0};
+  document.addEventListener('mousemove',e=>{mouse.x=(e.clientX/window.innerWidth-0.5)*1.5;mouse.y=-(e.clientY/window.innerHeight-0.5)*1.0;});
+  window.addEventListener('resize',()=>{camera.aspect=window.innerWidth/window.innerHeight;camera.updateProjectionMatrix();renderer.setSize(window.innerWidth,window.innerHeight);});
+
+  let t=0;
+  (function animate(){
+    t+=0.01;
+    shapes.forEach((s)=>{
+      s.rotation.x+=s.userData.speed;
+      s.rotation.y+=s.userData.speed*1.4;
+      s.position.y=s.userData.basePos[1]+Math.sin(t*0.65+s.userData.floatOff)*s.userData.floatAmp;
+    });
+    camera.position.x+=(mouse.x*1.0-camera.position.x)*0.025;
+    camera.position.y+=(mouse.y*0.6-camera.position.y)*0.025;
+    camera.lookAt(0,0,0);
+    renderer.render(scene,camera);
+    requestAnimationFrame(animate);
+  })();
+})();
+
+// ── COUNTER ──
+function animateCounter(el){
+  const target=parseInt(el.dataset.target)||0;
+  if(target===0){el.textContent='0';return;}
+  let start=0,step=target/60;
+  function update(){
+    start+=step;
+    if(start>=target){el.textContent=target.toLocaleString();return;}
+    el.textContent=Math.floor(start).toLocaleString();
+    requestAnimationFrame(update);
+  }
+  update();
+}
+
+// ── CROWD BARS ──
+const crowdData=[25,58,42,32,58,28,70,98,78,38];
+const crowdContainer=document.getElementById('crowdBars');
+if(crowdContainer){
+  crowdData.forEach(h=>{
+    const bar=document.createElement('div');bar.className='crowd-bar';
+    const fill=document.createElement('div');fill.className='crowd-bar-fill';
+    fill.style.height='0%';fill.dataset.h=h+'%';
+    bar.appendChild(fill);crowdContainer.appendChild(bar);
+  });
+}
+
+// ── INTERSECTION OBSERVER ──
+const triggered={counters:new Set(),progs:new Set(),crowd:false};
+const io=new IntersectionObserver((entries)=>{
+  entries.forEach(entry=>{
+    if(!entry.isIntersecting) return;
+    const el=entry.target;
+    el.classList.add('visible');
+    el.querySelectorAll('.count-num').forEach(c=>{
+      if(!triggered.counters.has(c)){triggered.counters.add(c);animateCounter(c);}
+    });
+    if(el.classList.contains('count-num')&&!triggered.counters.has(el)){triggered.counters.add(el);animateCounter(el);}
+    el.querySelectorAll('.prog-fill').forEach(b=>{
+      if(!triggered.progs.has(b)){triggered.progs.add(b);setTimeout(()=>b.style.width=b.dataset.width+'%',250);}
+    });
+    if(!triggered.crowd){
+      const fills=document.querySelectorAll('.crowd-bar-fill');
+      if(fills.length){triggered.crowd=true;fills.forEach((f,i)=>{setTimeout(()=>f.style.height=f.dataset.h,200+i*90);});}
+    }
+    io.unobserve(el);
+  });
+},{threshold:0.1});
+
+document.querySelectorAll('.reveal,.reveal-left,.reveal-right,section').forEach(el=>io.observe(el));
+document.querySelectorAll('.count-num').forEach(el=>io.observe(el));
+
+// ── PARALLAX HERO TEXT ──
+window.addEventListener('scroll',()=>{
+  const sy=window.scrollY;
+  const panel=document.querySelector('.hero-content-panel');
+  if(panel&&sy<window.innerHeight){
+    panel.style.transform=`translateY(${sy*0.18}px)`;
+    panel.style.opacity=Math.max(0,1-sy/520);
+  }
+});
+
+// ── TILT CARDS ──
+document.querySelectorAll('.zone-card,.feat-card,.plan-card,.culture-card').forEach(card=>{
+  card.addEventListener('mousemove',e=>{
+    const rect=card.getBoundingClientRect();
+    const x=(e.clientX-rect.left)/rect.width-0.5;
+    const y=(e.clientY-rect.top)/rect.height-0.5;
+    card.style.transform=`translateY(-6px) rotateX(${-y*6}deg) rotateY(${x*6}deg)`;
+    card.style.transition='transform 0.1s ease';
+  });
+  card.addEventListener('mouseleave',()=>{
+    card.style.transform='';
+    card.style.transition='all 0.45s cubic-bezier(0.4,0,0.2,1)';
+  });
+});
+
+// ── CTA OVERLAY ──
+const ctaVideoBg = document.querySelector('.cta-video-bg');
+if(ctaVideoBg){
+  const overlay=document.createElement('div');
+  overlay.style.cssText='position:absolute;inset:0;background:linear-gradient(to bottom,#040810 0%,rgba(4,8,16,0.7) 35%,rgba(4,8,16,0.7) 65%,#040810 100%);';
+  ctaVideoBg.appendChild(overlay);
+}
+</script>
+</body>
+</html>
